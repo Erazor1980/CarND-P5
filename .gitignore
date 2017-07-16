@@ -1,0 +1,17 @@
+vehicles/
+non-vehicles/
+vehicles_smallset/
+non-vehicles_smallset/
+.idea/
+README.md
+examples/.DS_Store
+examples/HOG_example.jpg
+examples/bboxes_and_heat.png
+examples/car_not_car.png
+examples/labels_map.png
+examples/output_bboxes.png
+examples/sliding_window.jpg
+examples/sliding_windows.jpg
+output_images/.DS_Store
+output_images/save_output_here.txt
+test_images/.DS_Store
