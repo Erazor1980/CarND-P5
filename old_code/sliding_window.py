@@ -172,7 +172,7 @@ if __name__ == "__main__":
     # image you are searching is a .jpg (scaled 0 to 255)
     # image = image.astype(np.float32)/255
 
-    windows = slide_window(image, x_start_stop=[None, None], y_start_stop=y_start_stop,
+    windows = slide_window(image, x_start_stop=[250, None], y_start_stop=y_start_stop,
                            xy_window=(96, 96), xy_overlap=(0.5, 0.5))
 
     hot_windows = search_windows(image, windows, svc, X_scaler, color_space=color_space,
