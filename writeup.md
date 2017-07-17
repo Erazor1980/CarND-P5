@@ -13,14 +13,7 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
+[image1]: ./output/car_not_car.png
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -32,7 +25,7 @@ You're reading it!
 
 ### Histogram of Oriented Gradients (HOG)
 
-The code for this step is contained in lines 108 through 140 of the file called `hog_subsample.py`).  
+The code for this step is contained in lines 108 through 140 of the file called `hog_subsample.py`.  
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
@@ -40,9 +33,9 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 
 Next I explored different color spaces and parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`). I used the `extract_features` function located in `helper.py` to try out several parameter combinations.
 I tried using only HOG features, then added color features (see `bin_spatial` and `color_hist` in `helper.py`).
-I reached best results with following combinations of parameters:
+I reached best results with following combination of parameters:
 
-| Source        | Destination   | 
+| Parameter     | Value| 
 |:-------------:|:-------------:| 
 | orient        | 9        | 
 | pix_per_cell  | 8      |
@@ -50,12 +43,11 @@ I reached best results with following combinations of parameters:
 | spatial_size  | (32, 32)        |
 | color space | LUV      |
 
+Feature extraction is located in lines 142 through 146 of `hog_subsample.py`. Features were scaled using StandardScalar (see lines 150-154).
+I trained a linear SVM using parameters shown in the table above (lines 168-171). Feature vector length was 8460, consisting of spatial features, histogram features and HOG features.
 
-I trained a linear SVM using using parameters shown in the table above. Feature vector length was 8460, consisting of spatial features, histogram features and HOG features.
 
-###Sliding Window Search
-
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
+### Sliding Window Search
 
 I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
 
