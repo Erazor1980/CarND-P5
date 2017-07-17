@@ -16,3 +16,5 @@ output_images/.DS_Store
 output_images/save_output_here.txt
 test_images/.DS_Store
 __pycache__/
+output/.DS_Store
+output/save_output_here.txt

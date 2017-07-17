@@ -60,7 +60,10 @@ def extract_features(imgs, conv='RGB2YCrCb', spatial_size=(32, 32),
         file_features = []
         # Read in each one by one
         image = mpimg.imread(file)
-        image = image.astype(np.float32) / 255
+
+        # only divide by 255 if image is loaded as jpeg
+        if np.max(image) > 1:
+            image = image.astype(np.float32) / 255
 
         feature_image = convert_color(image, conv=conv)
 

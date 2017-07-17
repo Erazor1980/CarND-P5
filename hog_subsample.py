@@ -9,10 +9,15 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from helper import *
 
+train_on_big_data_set = True
+
 # Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
     draw_img = np.copy(img)
-    img = img.astype(np.float32) / 255
+
+    # only divide by 255 if image is loaded as jpeg
+    if np.max(img) > 1:
+        img = img.astype(np.float32) / 255
 
     img_tosearch = img[ystart:ystop, :, :]
     ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
@@ -98,16 +103,19 @@ if __name__ == "__main__":
     ystop = 656
     scale = 1
 
-
     # Read in cars and notcars
-    images = glob.glob('./vehicles_smallset/*/*.jpeg') + glob.glob('./non-vehicles_smallset/*/*.jpeg')
-    cars = []
-    notcars = []
-    for image in images:
-        if 'image' in image or 'extra' in image:
-            notcars.append(image)
-        else:
-            cars.append(image)
+    if train_on_big_data_set == True:
+        cars = glob.glob('./vehicles/*/*.png')
+        notcars = glob.glob('./non-vehicles/*/*.png')
+    else:
+        images = glob.glob('./vehicles_smallset/*/*.jpeg') + glob.glob('./non-vehicles_smallset/*/*.jpeg')
+        cars = []
+        notcars = []
+        for image in images:
+            if 'image' in image or 'extra' in image:
+                notcars.append(image)
+            else:
+                cars.append(image)
 
     car_features = extract_features(cars, conv='RGB2YCrCb', spatial_size=spatial_size, hist_bins=hist_bins,
                                     orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block )
@@ -144,7 +152,10 @@ if __name__ == "__main__":
     t = time.time()
 
     import pickle
-    filename = 'svc_pickle.p'
+    if train_on_big_data_set == True:
+        filename = 'svc_pickle.p'
+    else:
+        filename = 'svc_pickle_small.p'
     data = {'svc': svc,
             'X_scaler': X_scaler,
             'orient': orient,
