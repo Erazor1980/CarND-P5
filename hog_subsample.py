@@ -9,10 +9,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from helper import *
 
-train_on_big_data_set = True
+train_on_big_data_set = False
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
-def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
+def find_cars(img, conv, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
     draw_img = np.copy(img)
 
     # only divide by 255 if image is loaded as jpeg
@@ -20,7 +20,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
         img = img.astype(np.float32) / 255
 
     img_tosearch = img[ystart:ystop, :, :]
-    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
+    ctrans_tosearch = convert_color(img_tosearch, conv=conv)
     if scale != 1:
         imshape = ctrans_tosearch.shape
         ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1] / scale), np.int(imshape[0] / scale)))
@@ -101,7 +101,8 @@ if __name__ == "__main__":
     hist_bins = 32  # Number of histogram bins
     ystart = 400
     ystop = 656
-    scale = 1
+    scale = 1.5
+    conv = 'RGB2YCrCb' # 'RGB2LUV' 'RGB2YCrCb'
 
     # Read in cars and notcars
     if train_on_big_data_set == True:
@@ -117,10 +118,34 @@ if __name__ == "__main__":
             else:
                 cars.append(image)
 
-    car_features = extract_features(cars, conv='RGB2YCrCb', spatial_size=spatial_size, hist_bins=hist_bins,
+
+    if False:    # save example car/non-car image
+        car_ind = np.random.randint(0, len(cars))
+        notcar_ind = np.random.randint(0, len(notcars))
+
+        # Read in car / not-car images
+        car_image = mpimg.imread(cars[car_ind])
+        notcar_image = mpimg.imread(notcars[notcar_ind])
+
+        # Plot the examples
+        fig = plt.figure()
+        plt.subplot(121)
+        plt.imshow(car_image)
+        plt.title('Example Car Image')
+        plt.subplot(122)
+        plt.imshow(notcar_image)
+        plt.title('Example Not-car Image')
+        plt.show()
+
+    print("Extracting", len(cars), "car features and", len(notcars),"non-car features...")
+    t = time.time()
+    car_features = extract_features(cars, conv=conv, spatial_size=spatial_size, hist_bins=hist_bins,
                                     orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block )
-    notcar_features = extract_features(notcars, conv='RGB2YCrCb', spatial_size=spatial_size, hist_bins=hist_bins,
+    notcar_features = extract_features(notcars, conv=conv, spatial_size=spatial_size, hist_bins=hist_bins,
                                     orient=orient, pix_per_cell=pix_per_cell, cell_per_block=cell_per_block )
+
+    t2 = time.time()
+    print("...done in ", round(t2 - t, 2), "Seconds.")
 
     X = np.vstack((car_features, notcar_features)).astype(np.float64)
     # Fit a per-column scaler
@@ -162,13 +187,14 @@ if __name__ == "__main__":
             'pix_per_cell': pix_per_cell,
             'cell_per_block': cell_per_block,
             'spatial_size': spatial_size,
-            'hist_bins': hist_bins}
+            'hist_bins': hist_bins,
+            'conv': conv}
 
     pickle.dump(data, open(filename, 'wb'))
 
 
     image = mpimg.imread('./test_images/test4.jpg')
-    bboxes, out_img = find_cars(image, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
+    bboxes, out_img = find_cars(image, conv, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
                         hist_bins)
 
     plt.imshow(out_img)

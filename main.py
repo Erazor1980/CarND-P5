@@ -3,9 +3,9 @@ from helper import *
 from scipy.ndimage.measurements import label
 import pickle
 
-test_on_single_image = False
+test_on_single_image = True
 
-filename = 'svc_pickle.p'
+filename = 'svc_pickle_YCrCb.p'         #'svc_pickle_LUV.p' 'svc_pickle_YCrCb.p'
 data = pickle.load(open(filename, 'rb'))
 
 X_scaler        = data['X_scaler']
@@ -15,6 +15,7 @@ pix_per_cell    = data['pix_per_cell']      # HOG pixels per cell
 cell_per_block  = data['cell_per_block']    # HOG cells per block
 spatial_size    = data['spatial_size']      # Spatial binning dimensions
 hist_bins       = data['hist_bins']         # Number of histogram bins
+conv            = data['conv']              # RGB2YCrCb, RGB2LUV, RGB2HSV, RGB2HLS or RGB2YUV
 ystart = 400
 ystop = 656
 scale = 1.5
@@ -26,10 +27,10 @@ scale = 1.5
 #plt.show()
 
 def process_frame(image, video=True):
-    box_list, _ = find_cars(image, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell,
+    box_list, _ = find_cars(image, conv, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell,
                          cell_per_block, spatial_size, hist_bins)
 
-    box_list2, _ = find_cars(image, ystart, ystop, 1, svc, X_scaler, orient, pix_per_cell,
+    box_list2, _ = find_cars(image, conv, ystart, ystop, 1, svc, X_scaler, orient, pix_per_cell,
                          cell_per_block, spatial_size, hist_bins)
     box_list += box_list2
 
@@ -38,7 +39,7 @@ def process_frame(image, video=True):
     # Add heat to each box in box list
     heat = add_heat(heat,box_list)
     # Apply threshold to help remove false positives
-    heat = apply_threshold(heat,1)
+    heat = apply_threshold(heat,2)
     # Visualize the heatmap when displaying
     heatmap = np.clip(heat, 0, 255)
 
