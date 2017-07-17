@@ -44,12 +44,12 @@ I reached best results with following combination of parameters:
 | color space | LUV      |
 
 Feature extraction is located in lines 142 through 146 of `hog_subsample.py`. Features were scaled using StandardScalar (see lines 150-154).
-I trained a linear SVM using parameters shown in the table above (lines 168-171). Feature vector length was 8460, consisting of spatial features, histogram features and HOG features.
+I trained a linear SVM using parameters shown in the table above (lines 168-171). Feature vector length was 8460, consisting of spatial features, histogram features and HOG features. The data was divided into training and test sets using train_test_split from sklearn.model_selection (see lines 160-162, 20% test, 80% training).
 
 
 ### Sliding Window Search
 
-I decided to search only in relevant area of the image (ystart = 400, ystop 656) with 2 different scale sizes (1.5 and 1). For the steps in x and y direction I chose 2 cells (see line 40 in `hog_subsample.py`). An example image is presented below:
+I decided to search only in relevant area of the image (ystart = 400, ystop 656) with 2 different scale sizes (1.5 and 1). For the steps in x and y direction I chose 2 cells (see line 40 in `hog_subsample.py`), so there is a huge overlap. An example image is presented below:
 
 ![alt text][image3]
 
@@ -63,7 +63,7 @@ Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spat
 Here's a [link to my video result](./output/project_video.mp4)
 
 
-I recorded the positions of positive detections in each frame of the video (the function find_cars returns boundin boxes, see line 93 in `hog_subsample.py`). From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected. All appropriate functions can be found in `helper.py`.
+I recorded the positions of positive detections in each frame of the video (the function find_cars returns bounding boxes of detected cars, see line 93 in `hog_subsample.py`). From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected. All appropriate functions can be found in `helper.py`.
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
