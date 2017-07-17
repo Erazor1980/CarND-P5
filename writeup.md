@@ -14,6 +14,10 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 [image1]: ./output/car_not_car.png
+[image2]: ./output/sliding_window.png
+[image3]: ./output/sliding_window2.png
+[image4]: ./output/heat_map.png
+[image5]: ./output/heat_map_result_bb.png
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -51,31 +55,27 @@ I trained a linear SVM using parameters shown in the table above (lines 168-171)
 
 I decided to search only in relevant area of the image (ystart = 400, ystop 656) with 2 different scale sizes (1.5 and 1). For the steps in x and y direction I chose 2 cells (see line 40 in `hog_subsample.py`), so there is a huge overlap. An example image is presented below:
 
+![alt text][image2]
+
+Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here another example image:
+
 ![alt text][image3]
-
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
-
-![alt text][image4]
 ---
 
 ### Video Implementation
 
 Here's a [link to my video result](./output/project_video.mp4)
 
-
 I recorded the positions of positive detections in each frame of the video (the function find_cars returns bounding boxes of detected cars, see line 93 in `hog_subsample.py`). From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions. I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle. I constructed bounding boxes to cover the area of each blob detected. All appropriate functions can be found in `helper.py`.
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are six frames and their corresponding heatmaps:
+### Here is a frames and its corresponding heatmap:
 
+![alt text][image4]
+
+### Here the resulting bounding boxes::
 ![alt text][image5]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
 
 
 
@@ -83,7 +83,11 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ###Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+To improve the algorithm I would perform following steps:
+
+* Parameter tuning using Cross-validation with GridSearchCV, to find the best parameter combination for the classifier automatically
+* Adding more scales to find bigger/smaller cars (nearer and more far away)
+* Cumulative heatmap over n last frames to make the algo more robust (and remove even more outliers)
 
